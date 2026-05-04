@@ -73,7 +73,6 @@
         /* --- WELCOME PAGE --- */
         #welcome {
             height: 100vh;
-            /* Change the URL here to your exact file name */
             background-image: linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)), url('cloud2.jpg');
             background-size: cover;
             background-position: center;
@@ -148,9 +147,47 @@
             z-index: 1;
         }
 
+        /* --- MENU FILTERS (NEW) --- */
+        #menu-filters {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 15px 5%;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 80px; /* Sits exactly below the desktop nav bar */
+            background-color: rgba(250, 249, 246, 0.95); /* Matches var(--off-white) */
+            z-index: 100;
+            -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+            border-bottom: 1px solid rgba(83, 51, 13, 0.1);
+        }
+
+        #menu-filters::-webkit-scrollbar {
+            display: none; /* Hide scrollbar Chrome/Safari */
+        }
+
+        .filter-btn {
+            background-color: transparent;
+            color: var(--dark-brown);
+            border: 2px solid var(--dark-brown);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-family: var(--font-accent);
+            font-size: 1rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--dark-brown);
+            color: var(--off-white);
+        }
+
         /* --- MENU SECTION --- */
         #menu {
-            padding: 20px 5%;
+            padding: 20px 0; /* Adjusted padding for full-width sticky filter */
             position: relative;
             z-index: 1;
         }
@@ -158,6 +195,7 @@
         .menu-category {
             margin-bottom: 60px;
             text-align: center; 
+            padding-top: 20px; /* Gives breathing room when jumping to section */
         }
 
         .category-title {
@@ -173,7 +211,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 30px;
-            padding: 0 10px;
+            padding: 0 5%;
         }
 
         .polaroid {
@@ -420,6 +458,43 @@
             100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
 
+        /* --- MOBILE RESPONSIVENESS (UPDATED) --- */
+        @media (max-width: 768px) {
+            nav {
+                padding: 10px 20px;
+            }
+
+            .brand-logo {
+                height: 40px;
+            }
+
+            #menu-filters {
+                top: 60px; /* Accounts for smaller mobile nav height */
+                padding: 10px 5%;
+            }
+
+            .filter-btn {
+                font-size: 0.9rem;
+                padding: 6px 14px;
+            }
+
+            /* ... (Rest of your existing mobile media queries stay the same) ... */
+            .slogan { font-size: 2.5rem; padding: 0 15px; }
+            .btn-start { font-size: 1.2rem; padding: 12px 30px; }
+            .section-header { font-size: 2.2rem; margin: 40px 0 20px 0; }
+            .category-title { font-size: 1.6rem; margin-bottom: 20px; }
+            .grid-container { gap: 20px; padding: 0 5%; }
+            .polaroid { flex: 0 1 100%; max-width: 320px; }
+            .clean-section { padding: 50px 5%; }
+            .clean-info p { font-size: 1.1rem; }
+            .btn-outline, .btn-solid { display: block; width: 100%; text-align: center; margin-right: 0; }
+            .modal-content { padding: 15px 15px 20px 15px; width: 95%; }
+            .modal-content img { max-height: 40vh; }
+            .modal-text { font-size: 1.5rem; }
+            .modal-desc { font-size: 1rem; }
+            .close-btn { top: -35px; right: 10px; font-size: 35px; }
+        }
+
     </style>
 </head>
 <body>
@@ -439,6 +514,9 @@
 
         <section id="menu">
             <h2 class="section-header fade-in">Our Menu</h2>
+            
+            <div id="menu-filters" class="fade-in"></div>
+
             <div id="menu-container">
                 </div>
         </section>
@@ -640,10 +718,33 @@
         ];
 
         const menuContainer = document.getElementById('menu-container');
+        const menuFilters = document.getElementById('menu-filters'); // Target for our new filter buttons
 
         menuData.forEach((section, index) => {
+            // --- NEW: Generate Sticky Filter Jump Links ---
+            const filterBtn = document.createElement('button');
+            filterBtn.className = 'filter-btn';
+            filterBtn.textContent = section.category;
+            
+            // Add click listener for smooth scrolling to the right category
+            filterBtn.addEventListener('click', () => {
+                const targetSection = document.getElementById(`category-${index}`);
+                // Calculates offset so the sticky headers don't cover the title when we jump
+                const headerOffset = document.querySelector('nav').offsetHeight + menuFilters.offsetHeight + 10;
+                const elementPosition = targetSection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            });
+            menuFilters.appendChild(filterBtn);
+
+            // --- Existing Section Generation ---
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'menu-category fade-in'; 
+            categoryDiv.id = `category-${index}`; // Give the section an ID so we can jump to it
             
             const title = document.createElement('h3');
             title.className = 'category-title';
