@@ -28,7 +28,7 @@
             position: relative;
         }
 
-        h1, h2, h3, h4, .btn, .nav-links a, .polaroid-text {
+        h1, h2, h3, h4, .btn, .polaroid-text {
             font-family: var(--font-accent);
             font-weight: bold;
         }
@@ -70,39 +70,22 @@
             border-radius: 5px;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-links a {
-            color: var(--off-white);
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: #d7ccc8;
-            transform: translateY(-2px);
-        }
-
         /* --- WELCOME PAGE --- */
         #welcome {
-    height: 100vh;
-    /* Change the URL here to your exact file name */
-    background-image: linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)), url('cloud.jpg');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--off-white);
-    position: relative;
-    z-index: 10;
-}
+            height: 100vh;
+            /* Change the URL here to your exact file name */
+            background-image: linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)), url('cloud.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--off-white);
+            position: relative;
+            z-index: 10;
+        }
 
         .slogan {
             font-size: 4rem;
@@ -145,7 +128,6 @@
             padding-top: 50px;
         }
 
-        /* NEW: This canvas stops the floating beans from stretching the page downwards */
         #bean-canvas {
             position: absolute;
             top: 0;
@@ -292,7 +274,6 @@
             font-size: 1.1rem;
         }
 
-        /* Adds spacing between the new FontAwesome icons and text */
         .btn-outline i, .btn-solid i {
             margin-right: 8px;
         }
@@ -445,11 +426,7 @@
 
     <nav>
         <img src="logo.png" alt="Cloud Cafe Brand" class="brand-logo">
-        <div class="nav-links">
-            <a href="#welcome">Welcome</a>
-            <a href="#menu">Menu</a>
-            <a href="#visit">Visit/Contact</a>
-        </div>
+        <img src="logo3.png" alt="Secondary Brand Logo" class="brand-logo">
     </nav>
 
     <header id="welcome">
@@ -538,7 +515,7 @@
 
         const menuData = [
             { 
-                category: "SPECIALTY COFFEE", 
+                category: "Specialty Coffee", 
                 items: [
                     { name: "Kapeng Barako", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Kapeng+Barako", desc: "A strong, full-bodied Batangas classic." },
                     { name: "Americano", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Americano", desc: "Rich espresso topped with hot water." },
@@ -551,7 +528,7 @@
                 ] 
             },
             { 
-                category: "COFFEE-BASED", 
+                category: "Coffee-Based", 
                 items: [
                     { name: "Biscoff Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Biscoff+Latte", desc: "Infused with the iconic caramelized biscuit flavor." },
                     { name: "Sea Salt Nutella Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Nutella", desc: "A decadent mix of Nutella and espresso, crowned with sea salt foam." },
@@ -561,7 +538,7 @@
                 ] 
             },
             { 
-                category: "CLOUD", 
+                category: "Cloud", 
                 items: [
                     { name: "Coffee Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Coffee+Cloud", desc: "A fluffy, airy texture over premium coffee." },
                     { name: "Sea Salt Coffee Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Cloud", desc: "Light, airy foam with a hint of sea salt." },
