@@ -245,17 +245,21 @@
             align-items: center;
         }
 
-        .intro-left .section-title { color: var(--off-white); }
-        .intro-left .section-label { color: var(--light-brown); }
+        .intro-left .section-title { color: var(--off-white); margin-bottom: 0; }
 
-        .intro-right p {
-            color: rgba(250,249,246,0.75);
-            font-size: 1.05rem;
-            line-height: 1.85;
-            margin: 0 0 20px;
+        .intro-right {
+            display: flex;
+            justify-content: flex-end; /* Align contents to the right */
         }
 
-        .intro-right p:last-child { margin: 0; }
+        .intro-logo {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-left: auto; /* Push it as far right as possible */
+            margin-right: 0;
+        }
 
         /* ── FADE IN ── */
         .fade-in {
@@ -285,6 +289,54 @@
             align-items: center;
             text-align: center;
             margin-bottom: 30px;
+        }
+
+        /* Animated Full Menu Image Button */
+        .btn-glow {
+            position: relative;
+            margin-top: 10px;
+            padding: 12px 28px;
+            background: var(--dark-brown);
+            color: var(--off-white);
+            border: 2px solid var(--dark-brown);
+            border-radius: 30px;
+            font-family: var(--font-accent);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(83, 51, 13, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Light sweep animation inside the button */
+        .btn-glow::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg) translateX(-100%);
+            animation: lightSweep 3.5s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes lightSweep {
+            0% { transform: rotate(45deg) translateX(-150%); }
+            20%, 100% { transform: rotate(45deg) translateX(150%); }
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(83, 51, 13, 0.4);
+            background: var(--mid-brown);
+            border-color: var(--mid-brown);
         }
 
         /* Sticky Category Filters */
@@ -358,7 +410,7 @@
             transform: translateX(-50%);
         }
 
-        /* Polaroid grid - Changed to Flexbox for Center Alignment */
+        /* Polaroid grid - Flexbox for Center Alignment */
         .polaroid-grid {
             display: flex;
             flex-wrap: wrap;
@@ -370,9 +422,9 @@
         }
 
         .polaroid {
-            width: 220px; /* Fixed width to maintain consistent card sizes */
+            width: 220px;
             background: #fff;
-            padding: 10px 10px 42px 10px; /* Reduced bottom padding slightly */
+            padding: 10px 10px 42px 10px;
             box-shadow: 0 4px 16px rgba(83,51,13,0.08), 0 1px 4px rgba(83,51,13,0.06);
             cursor: pointer;
             transition: transform 0.35s ease, box-shadow 0.35s ease;
@@ -388,7 +440,7 @@
 
         .polaroid img {
             width: 100%;
-            aspect-ratio: 1 / 1; /* Changed to 1:1 square to reduce height */
+            aspect-ratio: 1 / 1;
             object-fit: cover;
             display: block;
             background-color: var(--cream);
@@ -403,7 +455,7 @@
             font-family: var(--font-accent);
             font-size: 0.95rem;
             color: var(--dark-brown);
-            text-align: center; /* Center aligned text */
+            text-align: center;
         }
 
         /* ── FLOATING BEANS ── */
@@ -443,7 +495,7 @@
             100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
         }
 
-        /* ── MODAL ── */
+        /* ── GENERAL MODAL BASE ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -462,6 +514,24 @@
             pointer-events: all;
         }
 
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--off-white);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 2010;
+        }
+
+        .modal-close:hover { opacity: 1; }
+
+        /* ITEM MODAL */
         .modal-box {
             background: var(--off-white);
             max-width: 420px;
@@ -481,7 +551,7 @@
 
         .modal-img-wrap {
             width: 100%;
-            aspect-ratio: 1 / 1; /* Updated modal image to match the new square aspect ratio */
+            aspect-ratio: 1 / 1;
             overflow: hidden;
         }
 
@@ -516,21 +586,35 @@
             margin: 0;
         }
 
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--off-white);
-            font-size: 2rem;
-            cursor: pointer;
-            line-height: 1;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+        /* FULL IMAGE MENU MODAL */
+        .full-menu-box {
+            background: transparent;
+            max-width: 95vw;
+            max-height: 95vh;
+            width: auto;
+            transform: scale(0.8) translateY(30px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.34, 1.3, 0.64, 1), opacity 0.4s ease;
+            overflow-y: auto;
+            border-radius: 4px;
         }
 
-        .modal-close:hover { opacity: 1; }
+        .modal-overlay.open .full-menu-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar styles for tall menus */
+        .full-menu-box::-webkit-scrollbar { width: 8px; }
+        .full-menu-box::-webkit-scrollbar-thumb { background: var(--mid-brown); border-radius: 4px; }
+
+        .full-menu-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
 
         /* ── VISIT / CONTACT SPLIT ── */
         .split-section {
@@ -704,7 +788,7 @@
 
         @media (max-width: 520px) {
             .polaroid {
-                width: 155px; /* Adjust size for smaller screens */
+                width: 155px;
             }
             .polaroid-grid {
                 gap: 16px;
@@ -743,12 +827,10 @@
 
 <div id="intro" aria-label="About Cloud Cafe">
     <div class="intro-left fade-in">
-        <p class="section-label">Our Story</p>
         <h2 class="section-title">A Taste of Home<br>in Every Sip</h2>
     </div>
     <div class="intro-right fade-in delay-2">
-        <p>Nestled in the heart of Laiya, Cloud Cafe was born from a love of good coffee and good company. We blend local flavors with international favorites to create a menu that feels both familiar and exciting.</p>
-        <p>Whether you're here for a quick Kapeng Barako or a leisurely afternoon with croffles and friends, our doors — and our hearts — are always open.</p>
+        <img src="logo3.png" alt="Cloud Cafe Emblem" class="intro-logo">
     </div>
 </div>
 
@@ -756,6 +838,9 @@
     <div class="menu-header fade-in">
         <p class="section-label">What We Serve</p>
         <h2 class="section-title">Our Menu</h2>
+        <button id="view-menu-img-btn" class="btn-glow">
+            <i class="fas fa-camera-retro"></i> View Full Menu
+        </button>
     </div>
 
     <div class="category-tabs fade-in delay-1" id="category-tabs"></div>
@@ -833,6 +918,13 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="full-menu-modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="full-menu-close" aria-label="Close Full Menu">×</button>
+    <div class="full-menu-box">
+        <img src="menu-image.jpg" alt="Cloud Cafe Complete Menu" class="full-menu-img">
+    </div>
+</div>
+
 <script>
     /* ── MENU DATA ── */
     const menuData = [
@@ -867,7 +959,7 @@
             { name: "Chorisilog", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chorisilog", desc: "Savory chorizo, garlic rice, and a fried egg." },
             { name: "Bangus Unagi", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Bangus+Unagi", desc: "A unique fusion of local bangus glazed in sweet unagi sauce." },
             { name: "Cloud's Chicken", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Clouds+Chicken", desc: "Our house-special crispy chicken over rice." },
-            { name: "Bisteksilog", img: "bistek.jpg", desc: "Filipino beef steak served with garlic rice and an egg." }
+            { name: "Bisteksilog", img: "bistek.jpg", desc: "Filipino beef steak served with rice and an egg." }
         ]},
         { category: "Pasta", items: [
             { name: "Chef's Pasta", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chefs+Pasta", desc: "The chef's special recipe, crafted fresh daily." },
@@ -953,7 +1045,7 @@
                 <img src="${item.img}" alt="${item.name}" loading="lazy">
                 <div class="polaroid-label">${item.name}</div>
             `;
-            card.addEventListener('click', () => openModal(item));
+            card.addEventListener('click', () => openItemModal(item));
             grid.appendChild(card);
         });
 
@@ -962,23 +1054,11 @@
 
         // Click Event: Handle Tab Switching
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons and panels
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
             
-            // Add active class to clicked button and target panel
             btn.classList.add('active');
             panel.classList.add('active');
-
-            // Scroll up smoothly if the user scrolled far down in a long tab
-            const menuSectionTop = document.getElementById('menu-section').getBoundingClientRect().top;
-            const navHeight = document.getElementById('main-nav').offsetHeight;
-            if (menuSectionTop < 0) { 
-                window.scrollTo({
-                    top: window.pageYOffset + menuSectionTop - navHeight,
-                    behavior: 'smooth'
-                });
-            }
         });
 
         tabsEl.appendChild(btn);
@@ -1012,27 +1092,53 @@
         if (e.target.tagName === 'A') navLinks.classList.remove('open');
     });
 
-    /* ── MODAL COMPONENT ── */
-    const modal = document.getElementById('modal');
-    const modalClose = document.getElementById('modal-close');
+    /* ── INDIVIDUAL ITEM MODAL COMPONENT ── */
+    const itemModal = document.getElementById('modal');
+    const itemModalClose = document.getElementById('modal-close');
 
-    function openModal(item) {
+    function openItemModal(item) {
         document.getElementById('modal-img').src = item.img;
         document.getElementById('modal-img').alt = item.name;
         document.getElementById('modal-name').textContent = item.name;
         document.getElementById('modal-desc').textContent = item.desc || '';
-        modal.classList.add('open');
+        itemModal.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        modal.classList.remove('open');
+    function closeItemModal() {
+        itemModal.classList.remove('open');
         document.body.style.overflow = '';
     }
 
-    modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    itemModalClose.addEventListener('click', closeItemModal);
+    itemModal.addEventListener('click', e => { if (e.target === itemModal) closeItemModal(); });
+
+    /* ── FULL IMAGE MENU MODAL COMPONENT ── */
+    const fullMenuModal = document.getElementById('full-menu-modal');
+    const fullMenuBtn = document.getElementById('view-menu-img-btn');
+    const fullMenuClose = document.getElementById('full-menu-close');
+
+    function openFullMenuModal() {
+        fullMenuModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFullMenuModal() {
+        fullMenuModal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    fullMenuBtn.addEventListener('click', openFullMenuModal);
+    fullMenuClose.addEventListener('click', closeFullMenuModal);
+    fullMenuModal.addEventListener('click', e => { if (e.target === fullMenuModal) closeFullMenuModal(); });
+
+    /* Close Modals on Escape Key */
+    document.addEventListener('keydown', e => { 
+        if (e.key === 'Escape') {
+            closeItemModal();
+            closeFullMenuModal();
+        } 
+    });
 
     /* ── FLOATING BEANS BACKGROUND ── */
     const canvas = document.getElementById('bean-canvas');
