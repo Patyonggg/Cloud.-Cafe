@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Cafe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CORE STYLES & FONTS --- */
+        :root {
+            --dark-brown: #53330d;
+            --off-white: #FAF9F6;
+            --font-main: Georgia, Geneva, serif;
+            --font-accent: 'Roca Two', Georgia, Geneva, serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--off-white);
+            color: var(--dark-brown);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, h4, .btn, .nav-links a, .polaroid-text {
+            font-family: var(--font-accent);
+            font-weight: bold;
+        }
+
+        /* --- ENTRANCE ANIMATIONS --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--dark-brown);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            box-sizing: border-box;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .brand-logo {
+            height: 50px;
+            background: white; 
+            border-radius: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--off-white);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #d7ccc8;
+            transform: translateY(-2px);
+        }
+
+        /* --- WELCOME PAGE --- */
+        #welcome {
+    height: 100vh;
+    /* Change the URL here to your exact file name */
+    background-image: linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)), url('cloud.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--off-white);
+    position: relative;
+    z-index: 10;
+}
+
+        .slogan {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            padding: 0 20px;
+            opacity: 0;
+            animation: welcomeFadeIn 1.5s ease-out forwards;
+        }
+
+        .btn-start {
+            background-color: var(--off-white);
+            color: var(--dark-brown);
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            opacity: 0;
+            animation: welcomeFadeIn 1.5s ease-out 0.5s forwards;
+        }
+
+        .btn-start:hover {
+            background-color: var(--dark-brown);
+            color: var(--off-white);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        @keyframes welcomeFadeIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- CONTENT WRAPPER & BEAN CANVAS --- */
+        #content-wrapper {
+            position: relative;
+            z-index: 1;
+            padding-top: 50px;
+        }
+
+        /* NEW: This canvas stops the floating beans from stretching the page downwards */
+        #bean-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .section-header {
+            text-align: center;
+            font-size: 3rem;
+            margin: 60px 0 30px 0;
+            color: var(--dark-brown);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- MENU SECTION --- */
+        #menu {
+            padding: 20px 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-category {
+            margin-bottom: 60px;
+            text-align: center; 
+        }
+
+        .category-title {
+            font-size: 2rem;
+            border-bottom: 2px solid var(--dark-brown);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 0 10px;
+        }
+
+        .polaroid {
+            flex: 0 1 220px; 
+            background: #fff;
+            padding: 15px 15px 55px 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-radius: 2px;
+            text-align: left; 
+        }
+
+        .polaroid:hover {
+            transform: scale(1.03) rotate(-1deg);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            z-index: 2;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .polaroid-text {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            font-size: 1.1rem;
+            color: var(--dark-brown);
+            margin: 0;
+        }
+
+        /* --- VISIT & CONTACT PAGES --- */
+        .split-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .clean-section {
+            flex: 1;
+            min-width: 300px; 
+            padding: 80px 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+        }
+
+        #visit {
+            background-color: var(--dark-brown);
+            color: var(--off-white);
+        }
+
+        #visit .section-header {
+            color: var(--off-white);
+            text-align: left;
+            margin-top: 0;
+        }
+
+        #contact {
+            background-color: transparent; 
+            color: var(--dark-brown);
+        }
+
+        #contact .section-header {
+            text-align: left;
+            margin-top: 0;
+        }
+
+        .clean-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .clean-info p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .btn-outline, .btn-solid {
+            display: inline-block;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 30px;
+            margin-right: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            font-family: var(--font-accent);
+            font-size: 1.1rem;
+        }
+
+        /* Adds spacing between the new FontAwesome icons and text */
+        .btn-outline i, .btn-solid i {
+            margin-right: 8px;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--off-white);
+            color: var(--off-white);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--off-white);
+            color: var(--dark-brown);
+        }
+
+        .btn-solid {
+            background-color: var(--dark-brown);
+            color: var(--off-white);
+            border: 2px solid var(--dark-brown);
+        }
+
+        .btn-solid:hover {
+            background-color: transparent;
+            color: var(--dark-brown);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #2a1a17; 
+            color: var(--off-white);
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-logo {
+            height: 80px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        /* --- ZOOM MODAL --- */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px 20px 30px 20px;
+            border-radius: 4px;
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            transform: scale(0.8);
+            transition: transform 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .modal-text {
+            font-size: 2rem;
+            font-family: var(--font-accent);
+            color: var(--dark-brown);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .modal-desc {
+            font-size: 1.1rem;
+            color: #555;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.5;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #ccc;
+        }
+
+        /* --- FLOATING BEANS --- */
+        .bean {
+            position: absolute;
+            background-color: var(--dark-brown);
+            width: 15px;
+            height: 22px;
+            border-radius: 50%;
+            opacity: 0.15;
+            box-shadow: inset 4px 0 0 rgba(255,255,255,0.2); 
+            animation: float 15s infinite linear;
+        }
+
+        .bean::after {
+            content: '';
+            position: absolute;
+            top: 10%; left: 45%;
+            width: 2px; height: 80%;
+            background: var(--off-white);
+            border-radius: 50%;
+            transform: rotate(10deg);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <img src="logo.png" alt="Cloud Cafe Brand" class="brand-logo">
+        <div class="nav-links">
+            <a href="#welcome">Welcome</a>
+            <a href="#menu">Menu</a>
+            <a href="#visit">Visit/Contact</a>
+        </div>
+    </nav>
+
+    <header id="welcome">
+        <h1 class="slogan">"Good Things Happen After Coffee"</h1>
+        <a href="#menu" class="btn-start">Get Started</a>
+    </header>
+
+    <div id="content-wrapper">
+        
+        <div id="bean-canvas"></div>
+
+        <section id="menu">
+            <h2 class="section-header fade-in">Our Menu</h2>
+            <div id="menu-container">
+                </div>
+        </section>
+
+        <div class="split-wrapper">
+            
+            <section id="visit" class="clean-section fade-in">
+                <h2 class="section-header">Visit Us</h2>
+                <div class="clean-info">
+                    <h3>Store Hours</h3>
+                    <p>Monday - Thursday: 12:00 noon to 10:00 pm<br>
+                       Friday - Sunday: 12:00 noon - 11:30 pm</p>
+                    
+                    <h3>Location</h3>
+                    <p>Balakbakan, San Juan, 4226 Batangas</p>
+                    
+                    <a href="https://www.google.com/maps/place/Cloud.+Cafe/@13.6728647,121.3892295,53m/data=!3m1!1e3!4m6!3m5!1s0x33bd25e7669f351f:0x86123aab7b56405f!8m2!3d13.6728444!4d121.3891558!16s%2Fg%2F11nbs787rg?entry=ttu&g_ep=EgoyMDI2MDQyOS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-outline">
+                        <i class="fas fa-map-marker-alt"></i> Open in Google Maps
+                    </a>
+                </div>
+            </section>
+
+            <section id="contact" class="clean-section fade-in delay-1">
+                <h2 class="section-header">Contact Us</h2>
+                <div class="clean-info">
+                    <p>Follow us for updates, or give us a call to reserve a table or ask about our menu!</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <a href="https://www.facebook.com/cloudcafelaiya" target="_blank" class="btn-solid">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="https://www.instagram.com/cloud.cafe_laiya" target="_blank" class="btn-solid">
+                            <i class="fab fa-instagram"></i> Instagram
+                        </a>
+                        <a href="tel:+631234567890" class="btn-solid">
+                            <i class="fas fa-phone-alt"></i> Phone Call
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <footer>
+        <img src="logo2.png" alt="Cloud Cafe Logo" class="footer-logo"><br>
+        <span class="polaroid-text" style="position:relative; color:var(--off-white); bottom:0; left:0; font-size: 1rem;">© 2026 Cloud Cafe. All rights reserved.</span>
+    </footer>
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">×</span>
+            <img id="modalImg" src="" alt="Zoomed Item">
+            <div class="modal-text" id="modalText"></div>
+            <div class="modal-desc" id="modalDesc"></div>
+        </div>
+    </div>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const scrollObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const menuData = [
+            { 
+                category: "SPECIALTY COFFEE", 
+                items: [
+                    { name: "Kapeng Barako", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Kapeng+Barako", desc: "A strong, full-bodied Batangas classic." },
+                    { name: "Americano", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Americano", desc: "Rich espresso topped with hot water." },
+                    { name: "Capuccino", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Capuccino", desc: "Equal parts espresso, steamed milk, and foam." },
+                    { name: "Cafe Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Cafe+Latte", desc: "Smooth espresso with steamed milk." },
+                    { name: "Spanish Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Spanish+Latte", desc: "Sweetened condensed milk mixed with robust espresso." },
+                    { name: "Caramel Macchiato", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Caramel+Macchiato", desc: "Vanilla syrup, steamed milk, espresso, and a caramel drizzle." },
+                    { name: "Sea Salt Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Latte", desc: "Our signature latte topped with sweet and savory sea salt foam." },
+                    { name: "Cafe Mocha", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Cafe+Mocha", desc: "Espresso combined with rich chocolate and steamed milk." }
+                ] 
+            },
+            { 
+                category: "COFFEE-BASED", 
+                items: [
+                    { name: "Biscoff Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Biscoff+Latte", desc: "Infused with the iconic caramelized biscuit flavor." },
+                    { name: "Sea Salt Nutella Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Nutella", desc: "A decadent mix of Nutella and espresso, crowned with sea salt foam." },
+                    { name: "Strawberry Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Strawberry+Latte", desc: "A fruity twist on the classic latte." },
+                    { name: "Ube Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Ube+Latte", desc: "Earthy, sweet purple yam blended with our smooth espresso." },
+                    { name: "Tiramisu Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Tiramisu+Latte", desc: "Your favorite Italian dessert in a cup." }
+                ] 
+            },
+            { 
+                category: "CLOUD", 
+                items: [
+                    { name: "Coffee Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Coffee+Cloud", desc: "A fluffy, airy texture over premium coffee." },
+                    { name: "Sea Salt Coffee Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Cloud", desc: "Light, airy foam with a hint of sea salt." },
+                    { name: "Ube Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Ube+Cloud", desc: "Vibrant ube flavors topped with a pillowy cloud." },
+                    { name: "Matcha Cloud", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Matcha+Cloud", desc: "Premium matcha layered beneath a sweet cloud." }
+                ] 
+            },
+            { 
+                category: "Salad", 
+                items: [
+                    { name: "Greek Salad", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Greek+Salad", desc: "Fresh greens, olives, feta, and a light vinaigrette." },
+                    { name: "Kani Mango Salad", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Kani+Mango", desc: "Sweet mango and savory kani on a bed of crisp greens." }
+                ] 
+            },
+            { 
+                category: "Rice Meals", 
+                items: [
+                    { name: "Chorisilog", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chorisilog", desc: "Savory chorizo, garlic rice, and a fried egg." },
+                    { name: "Bangus Unagi", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Bangus+Unagi", desc: "A unique fusion of local bangus glazed in sweet unagi sauce." },
+                    { name: "Cloud's Chicken", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Clouds+Chicken", desc: "Our house-special crispy chicken over rice." },
+                    { name: "Bisteksilog", img: "bistek.jpg", desc: "Filipino beef steak served with garlic rice and an egg." }
+                ] 
+            },
+            { 
+                category: "Pasta", 
+                items: [
+                    { name: "Chef's Pasta", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chefs+Pasta", desc: "The chef's special recipe, crafted fresh daily." },
+                    { name: "Authentic Carbonara", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Carbonara", desc: "Rich and creamy, made the traditional way." },
+                    { name: "Filipino-style Meatball Pasta", img: "meatball.jpg", desc: "Sweet style spaghetti loaded with savory meatballs." },
+                    { name: "Seafood Aglio Olio", img: "seafood.jpg", desc: "Garlic, oil, and a fresh medley of seafood." }
+                ] 
+            },
+            { 
+                category: "Snacks", 
+                items: [
+                    { name: "Mojos/Fries", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Mojos+Fries", desc: "Crispy and seasoned to perfection." },
+                    { name: "Cheesy Nachos", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Cheesy+Nachos", desc: "Loaded with melted cheese and fresh toppings." },
+                    { name: "Chicken Wrap", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chicken+Wrap", desc: "Grilled chicken and veggies wrapped tight." },
+                    { name: "Cheesy Fresh Fries", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Cheese+Fries", desc: "Fresh cut fries smothered in a rich cheese sauce." },
+                    { name: "Beef Quesadilla", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Beef+Quesadilla", desc: "Toasted tortilla stuffed with seasoned beef and cheese." },
+                    { name: "Choriburger", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Choriburger", desc: "A flavor-packed chorizo patty on a toasted bun." },
+                    { name: "Filcheese Steak Sandwich", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Philly+Steak", desc: "Tender beef and melted cheese." },
+                    { name: "Chicken Wings", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Chicken+Wings", desc: "Crispy, juicy, and tossed in our signature sauce." }
+                ] 
+            },
+            { 
+                category: "Dessert", 
+                items: [
+                    { name: "Banana Pudding", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Banana+Pudding", desc: "Layers of sweet vanilla pudding, bananas, and wafers." },
+                    { name: "Tiramisu", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Tiramisu", desc: "Espresso-soaked ladyfingers and mascarpone cream." }
+                ] 
+            },
+            { 
+                category: "Croffles", 
+                items: [
+                    { name: "Classic Croffle", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Classic+Croffle", desc: "Croissant meets waffle. Crispy and buttery." },
+                    { name: "Honeyglazed", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Honeyglazed", desc: "A sweet honey drizzle over a warm croffle." },
+                    { name: "Nutella Alcapone", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Nutella+Alcapone", desc: "Rich Nutella and roasted almonds." },
+                    { name: "Cloudy Oreo", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Cloudy+Oreo", desc: "Crushed Oreos hidden beneath a fluffy cream cloud." },
+                    { name: "Biscoff Crunch", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Biscoff+Crunch", desc: "Biscoff spread topped with cookie crumbles." },
+                    { name: "Hazelnut Banana", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Hazelnut+Banana", desc: "Fresh bananas paired with hazelnut spread." }
+                ] 
+            },
+            { 
+                category: "Matcha", 
+                items: [
+                    { name: "Matcha Latte", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Matcha+Latte", desc: "Earthy premium matcha balanced with milk." },
+                    { name: "Sea Salt Matcha", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Sea+Salt+Matcha", desc: "Matcha topped with our savory sea salt foam." },
+                    { name: "Salted Vanilla Crème", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Salted+Vanilla", desc: "Smooth vanilla crème layered with matcha." },
+                    { name: "Umi Sora Cloud Matcha", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Umi+Sora", desc: "Our signature sky-themed matcha blend." },
+                    { name: "Ichigo Cotton Cloud Matcha", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Ichigo+Matcha", desc: "Strawberry notes floating over pure matcha." }
+                ] 
+            },
+            { 
+                category: "Non-Coffee", 
+                items: [
+                    { name: "Hot Chocolate Smores", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Hot+Choco+Smores", desc: "Rich hot chocolate topped with toasted marshmallows." },
+                    { name: "Salted Caramel Smores", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Caramel+Smores", desc: "A sweet and salty caramel twist on campfire smores." },
+                    { name: "Milo Bomb", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Milo+Bomb", desc: "An explosion of chocolate malt goodness." },
+                    { name: "Blossom Berry", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Blossom+Berry", desc: "A refreshing, fruity, non-caffeinated treat." }
+                ] 
+            },
+            { 
+                category: "Frappe", 
+                items: [
+                    { name: "Nutella Cheesecake", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Nutella+Cheese", desc: "Blended ice, Nutella, and rich cheesecake flavors." },
+                    { name: "Oreo Cheesecake", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Oreo+Cheesecake", desc: "Cookies and cream blended into a frosty delight." },
+                    { name: "Strawberry Cheesecake", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Strawberry+Cheese", desc: "Like drinking a slice of cold, fresh strawberry cake." },
+                    { name: "Mocha Chip Frost", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Mocha+Chip", desc: "Coffee, chocolate chips, and ice blended smooth." }
+                ] 
+            },
+            { 
+                category: "Soda Fizz", 
+                items: [
+                    { name: "Blueberry Fizz", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Blueberry+Fizz", desc: "A bubbly, iced blueberry refresher." },
+                    { name: "Green Apple Fizz", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Apple+Fizz", desc: "Crisp and tart green apple sparkling soda." },
+                    { name: "Honey Lemon Fizz", img: "https://via.placeholder.com/400x400/eeeeee/3e2723?text=Honey+Lemon", desc: "Soothing honey and zesty lemon over ice." }
+                ] 
+            }
+        ];
+
+        const menuContainer = document.getElementById('menu-container');
+
+        menuData.forEach((section, index) => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'menu-category fade-in'; 
+            
+            const title = document.createElement('h3');
+            title.className = 'category-title';
+            title.textContent = section.category;
+            categoryDiv.appendChild(title);
+
+            const grid = document.createElement('div');
+            grid.className = 'grid-container';
+
+            section.items.forEach((item, itemIndex) => {
+                const polaroid = document.createElement('div');
+                polaroid.className = `polaroid fade-in delay-${(itemIndex % 3) + 1}`; 
+                
+                polaroid.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}" loading="lazy">
+                    <p class="polaroid-text">${item.name}</p>
+                `;
+
+                polaroid.addEventListener('click', () => openModal(item.img, item.name, item.desc));
+                grid.appendChild(polaroid);
+            });
+
+            categoryDiv.appendChild(grid);
+            menuContainer.appendChild(categoryDiv);
+        });
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            scrollObserver.observe(element);
+        });
+
+        const modal = document.getElementById('itemModal');
+        const modalImg = document.getElementById('modalImg');
+        const modalText = document.getElementById('modalText');
+        const modalDesc = document.getElementById('modalDesc');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        function openModal(src, text, desc) {
+            modalImg.src = src;
+            modalText.textContent = text;
+            modalDesc.textContent = desc || ""; 
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.add('active'); }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            setTimeout(() => { modal.style.display = 'none'; }, 400); 
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(); 
+        });
+
+        // Appending beans to the new restricted canvas instead of the general wrapper
+        const canvas = document.getElementById('bean-canvas');
+        const beanCount = 25; 
+
+        for (let i = 0; i < beanCount; i++) {
+            let bean = document.createElement('div');
+            bean.className = 'bean';
+            
+            let leftPos = Math.random() * 100;
+            let animDuration = 10 + Math.random() * 20; 
+            let delay = Math.random() * 20;
+            let scale = 0.5 + Math.random() * 1.5;
+
+            bean.style.left = leftPos + '%';
+            bean.style.animationDuration = animDuration + 's';
+            bean.style.animationDelay = delay + 's';
+            bean.style.transform = `scale(${scale})`;
+            bean.style.top = (Math.random() * 100) + '%';
+
+            canvas.appendChild(bean);
+        }
+    </script>
+</body>
+</html>
