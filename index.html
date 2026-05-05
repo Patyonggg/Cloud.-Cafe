@@ -18,7 +18,7 @@
 
         *, *::before, *::after { box-sizing: border-box; }
 
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
 
         body {
             margin: 0;
@@ -519,6 +519,7 @@
         /* Menu Panel Updates for SMOOTHER Animations */
         #menu-panels {
             position: relative;
+            overflow-x: hidden;
             /* Smoother easing curve and slightly longer duration */
             transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -550,14 +551,12 @@
         }
 
         @keyframes slideInFromRight {
-            /* Increased starting distance slightly from 60px to 80px for a more elegant glide */
-            from { opacity: 0; transform: translateX(80px); }
+            from { opacity: 0; transform: translateX(40px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes slideInFromLeft {
-            /* Increased starting distance slightly from -60px to -80px for a more elegant glide */
-            from { opacity: 0; transform: translateX(-80px); }
+            from { opacity: 0; transform: translateX(-40px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
