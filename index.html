@@ -516,6 +516,12 @@
             color: var(--off-white);
         }
 
+        /* Menu Panel Updates for Smooth Animations */
+        #menu-panels {
+            position: relative;
+            transition: height 0.35s ease-out;
+        }
+
         .menu-panel { 
             display: none;
             margin-bottom: 60px;
@@ -527,9 +533,27 @@
             display: block;
         }
 
+        .menu-panel.slide-from-right {
+            animation: slideInFromRight 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .menu-panel.slide-from-left {
+            animation: slideInFromLeft 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
         @keyframes fadeInPanel {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInFromRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInFromLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .panel-title {
@@ -1229,13 +1253,46 @@
         panel.appendChild(grid);
         panelsEl.appendChild(panel);
 
-        // Click Event: Handle Tab Switching
+        // Click Event: Handle Tab Switching with Smooth Height and Swipe Animations
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+            if (btn.classList.contains('active')) return; // Ignore if already active
+
+            // 1. Determine slide direction (left or right)
+            const activeTab = document.querySelector('.tab-btn.active');
+            const tabsArray = Array.from(document.querySelectorAll('.tab-btn'));
+            const oldIndex = tabsArray.indexOf(activeTab);
+            const isMovingRight = index > oldIndex;
+
+            // 2. Lock current container height to prevent layout jumps
+            panelsEl.style.height = panelsEl.offsetHeight + 'px';
+            panelsEl.style.overflow = 'hidden';
+
+            // 3. Reset and update classes
+            tabsArray.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.menu-panel').forEach(p => {
+                p.classList.remove('active', 'slide-from-right', 'slide-from-left');
+            });
             
             btn.classList.add('active');
             panel.classList.add('active');
+            
+            // Apply the correct directional animation
+            panel.classList.add(isMovingRight ? 'slide-from-right' : 'slide-from-left');
+
+            // 4. Force browser reflow to register the locked height
+            void panelsEl.offsetHeight;
+
+            // 5. Animate to the new panel's required height
+            panelsEl.style.height = panelsEl.scrollHeight + 'px';
+
+            // 6. Cleanup after the transition completes (0.35s)
+            setTimeout(() => {
+                // Ensure we only reset if this panel is still the active one
+                if (panel.classList.contains('active')) {
+                    panelsEl.style.height = 'auto';
+                    panelsEl.style.overflow = 'visible';
+                }
+            }, 350);
         });
 
         tabsEl.appendChild(btn);
