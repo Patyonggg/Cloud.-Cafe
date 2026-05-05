@@ -421,6 +421,7 @@
             padding: 90px 0 80px 0;
             background: var(--off-white);
             position: relative;
+            overflow-x: hidden; /* clips horizontal slide-in/out bleed */
         }
 
         .menu-header {
@@ -562,10 +563,19 @@
             transition: all 0.25s ease;
         }
 
-        .tab-btn:hover, .tab-btn.active {
+        .tab-btn.active {
             border-color: var(--dark-brown);
             background: var(--dark-brown);
             color: var(--off-white);
+        }
+
+        /* Only apply hover on real pointer devices — prevents sticky-hover on touch */
+        @media (hover: hover) {
+            .tab-btn:hover {
+                border-color: var(--dark-brown);
+                background: var(--dark-brown);
+                color: var(--off-white);
+            }
         }
 
         /* Menu Panel Updates for SMOOTHER Animations */
