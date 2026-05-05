@@ -1257,17 +1257,19 @@
         btn.addEventListener('click', () => {
             if (btn.classList.contains('active')) return; // Ignore if already active
 
-            // 1. Determine slide direction (left or right)
+            // 1. Determine slide direction
             const activeTab = document.querySelector('.tab-btn.active');
             const tabsArray = Array.from(document.querySelectorAll('.tab-btn'));
             const oldIndex = tabsArray.indexOf(activeTab);
             const isMovingRight = index > oldIndex;
 
-            // 2. Lock current container height to prevent layout jumps
-            panelsEl.style.height = panelsEl.offsetHeight + 'px';
-            panelsEl.style.overflow = 'hidden';
+            // 2. Record the exact current height before touching anything
+            const oldHeight = panelsEl.offsetHeight;
 
-            // 3. Reset and update classes
+            // 3. Temporarily disable transitions to measure the new panel invisibly
+            panelsEl.style.transition = 'none';
+            
+            // 4. Swap active classes so the new panel renders
             tabsArray.forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.menu-panel').forEach(p => {
                 p.classList.remove('active', 'slide-from-right', 'slide-from-left');
@@ -1276,23 +1278,40 @@
             btn.classList.add('active');
             panel.classList.add('active');
             
-            // Apply the correct directional animation
+            // Let the container resize automatically to measure the true target height
+            panelsEl.style.height = 'auto'; 
+            const targetHeight = panelsEl.offsetHeight;
+
+            // 5. Instantly reset back to the old height before the browser draws the frame
+            panelsEl.style.height = oldHeight + 'px';
+            panelsEl.style.overflow = 'hidden';
+
+            // 6. Apply the left/right slide animation
             panel.classList.add(isMovingRight ? 'slide-from-right' : 'slide-from-left');
 
-            // 4. Force browser reflow to register the locked height
+            // 7. Force the browser to register the old height (Reflow)
             void panelsEl.offsetHeight;
 
-            // 5. Animate to the new panel's required height
-            panelsEl.style.height = panelsEl.scrollHeight + 'px';
+            // 8. Re-enable height transition
+            panelsEl.style.transition = 'height 0.35s ease-out';
 
-            // 6. Cleanup after the transition completes (0.35s)
-            setTimeout(() => {
-                // Ensure we only reset if this panel is still the active one
-                if (panel.classList.contains('active')) {
-                    panelsEl.style.height = 'auto';
-                    panelsEl.style.overflow = 'visible';
-                }
-            }, 350);
+            // 9. Animate or stabilize
+            if (oldHeight === targetHeight) {
+                // STABILIZE: If height is exactly the same, don't animate the container, just clean up
+                panelsEl.style.height = 'auto';
+                panelsEl.style.overflow = 'visible';
+            } else {
+                // ANIMATE: Smoothly transition up or down to the new measured height
+                panelsEl.style.height = targetHeight + 'px';
+
+                // Cleanup after animation finishes (0.35s)
+                setTimeout(() => {
+                    if (panel.classList.contains('active')) {
+                        panelsEl.style.height = 'auto';
+                        panelsEl.style.overflow = 'visible';
+                    }
+                }, 350);
+            }
         });
 
         tabsEl.appendChild(btn);
