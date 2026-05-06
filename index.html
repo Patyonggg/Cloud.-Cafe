@@ -578,17 +578,37 @@
             }
         }
 
-        /* Menu Panel - fixed height, scrollable inside */
+        /* Menu Panel Updates for SMOOTHER Animations */
         #menu-panels {
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
-            height: 520px;
+            height: 680px;
         }
 
         @media (max-width: 600px) {
-            #menu-panels { height: 420px; }
+            #menu-panels { height: 560px; }
         }
+
+        .menu-logo-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 36px 0 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .menu-logo {
+            width: 260px;
+            height: auto;
+            opacity: 0.85;
+            display: block;
+            margin: 0 auto;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-logo:hover { opacity: 1; }
 
         .menu-panel { 
             display: none;
@@ -687,6 +707,88 @@
             font-size: 0.95rem;
             color: var(--dark-brown);
             text-align: center;
+        }
+
+        /* ── SKELETON SHIMMER ── */
+        .polaroid-skeleton {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            overflow: hidden;
+            background: #f0e8da;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* sweeping shimmer wave */
+        .polaroid-skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                105deg,
+                transparent 35%,
+                rgba(255, 248, 235, 0.7) 50%,
+                transparent 65%
+            );
+            background-size: 200% 100%;
+            animation: shimmerWave 1.6s ease-in-out infinite;
+        }
+
+        @keyframes shimmerWave {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* floating cloud icon */
+        .skeleton-cloud {
+            font-size: 2rem;
+            animation: skeletonFloat 2.4s ease-in-out infinite;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes skeletonFloat {
+            0%, 100% { transform: translateY(0px);   opacity: 0.5; }
+            50%       { transform: translateY(-6px);  opacity: 1;   }
+        }
+
+        /* tiny coffee beans bubbling up */
+        .skeleton-beans {
+            display: flex;
+            gap: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .skeleton-bean {
+            width: 7px;
+            height: 10px;
+            background: rgba(83, 51, 13, 0.18);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: beanBounce 1.2s ease-in-out infinite;
+        }
+
+        .skeleton-bean:nth-child(2) { animation-delay: 0.2s; }
+        .skeleton-bean:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes beanBounce {
+            0%, 100% { transform: translateY(0);    opacity: 0.3; }
+            50%       { transform: translateY(-5px); opacity: 0.8; }
+        }
+
+        /* fade-in when real image is ready */
+        .polaroid img.loaded {
+            animation: imgFadeIn 0.5s ease forwards;
+        }
+
+        @keyframes imgFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
         /* ── FLOATING BEANS ── */
@@ -1120,6 +1222,10 @@
     <div class="swipe-dots" id="swipe-dots" aria-hidden="true"></div>
 
     <div id="menu-panels"></div>
+
+    <div class="menu-logo-wrap">
+        <img src="logo5.png" alt="Cloud Cafe" class="menu-logo">
+    </div>
 </section>
 
 <div id="visit-contact" class="split-section">
@@ -1315,10 +1421,41 @@
         section.items.forEach(item => {
             const card = document.createElement('div');
             card.className = 'polaroid';
-            card.innerHTML = `
-                <img src="${item.img}" alt="${item.name}" loading="lazy">
-                <div class="polaroid-label">${item.name}</div>
+
+            // Skeleton shown while image loads
+            const skeleton = document.createElement('div');
+            skeleton.className = 'polaroid-skeleton';
+            skeleton.innerHTML = `
+                <span class="skeleton-cloud">☁️</span>
+                <div class="skeleton-beans">
+                    <div class="skeleton-bean"></div>
+                    <div class="skeleton-bean"></div>
+                    <div class="skeleton-bean"></div>
+                </div>
             `;
+
+            // Real image — hidden until loaded
+            const img = document.createElement('img');
+            img.alt = item.name;
+            img.style.display = 'none';
+            img.onload = () => {
+                skeleton.remove();
+                img.style.display = 'block';
+                img.classList.add('loaded');
+            };
+            img.onerror = () => {
+                skeleton.remove();
+                img.style.display = 'block';
+            };
+            img.src = item.img;
+
+            const label = document.createElement('div');
+            label.className = 'polaroid-label';
+            label.textContent = item.name;
+
+            card.appendChild(skeleton);
+            card.appendChild(img);
+            card.appendChild(label);
             card.addEventListener('click', () => openItemModal(item));
             grid.appendChild(card);
         });
@@ -1326,7 +1463,7 @@
         panel.appendChild(grid);
         panelsEl.appendChild(panel);
 
-        // Click Event: Handle Tab Switching with Swipe Animations
+        // Click Event: Handle Tab Switching with Slide Animations
         btn.addEventListener('click', () => {
             if (btn.classList.contains('active')) return;
 
@@ -1345,13 +1482,13 @@
             btn.classList.add('active');
             panel.classList.add('active');
 
-            // 3. Reset scroll to top of panel area
+            // 3. Reset scroll to top
             panelsEl.scrollTop = 0;
 
-            // 4. Apply slide animation
+            // 4. Slide animation
             panel.classList.add(isMovingRight ? 'slide-from-right' : 'slide-from-left');
 
-            // 5. Update dot indicators
+            // 5. Update dots
             updateDots(index);
         });
 
@@ -1489,20 +1626,16 @@
         const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
 
-        // Lock in swipe direction on first significant movement
-        if (dx > 8 || dy > 8) {
-            isHorizontalSwipe = dx > dy;
-        }
+        if (dx > 8 || dy > 8) isHorizontalSwipe = dx > dy;
 
         if (isHorizontalSwipe) {
             const tabs = document.querySelectorAll('.tab-btn');
             const currentIndex = Array.from(tabs).findIndex(t => t.classList.contains('active'));
-            const swipingLeft  = e.changedTouches[0].clientX < touchStartX;
-            const atLastTab    = currentIndex === tabs.length - 1;
-            const atFirstTab   = currentIndex === 0;
+            const swipingLeft = e.changedTouches[0].clientX < touchStartX;
 
-            // Prevent native overscroll bounce at edges
-            if ((swipingLeft && atLastTab) || (!swipingLeft && atFirstTab)) {
+            // Block native bounce at first/last tab
+            if ((swipingLeft && currentIndex === tabs.length - 1) ||
+                (!swipingLeft && currentIndex === 0)) {
                 e.preventDefault();
             }
         }
@@ -1520,11 +1653,9 @@
         const currentIndex = Array.from(tabs).findIndex(t => t.classList.contains('active'));
 
         if (swipeDistance < -swipeThreshold && currentIndex < tabs.length - 1) {
-            // Swiped left → next tab
             tabs[currentIndex + 1].click();
             tabs[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         } else if (swipeDistance > swipeThreshold && currentIndex > 0) {
-            // Swiped right → previous tab
             tabs[currentIndex - 1].click();
             tabs[currentIndex - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
