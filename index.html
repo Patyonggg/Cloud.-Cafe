@@ -578,11 +578,16 @@
             }
         }
 
-        /* Menu Panel Updates for SMOOTHER Animations */
+        /* Menu Panel - fixed height, scrollable inside */
         #menu-panels {
             position: relative;
-            transition: height 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: height;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 520px;
+        }
+
+        @media (max-width: 600px) {
+            #menu-panels { height: 420px; }
         }
 
         .menu-panel { 
@@ -1321,9 +1326,9 @@
         panel.appendChild(grid);
         panelsEl.appendChild(panel);
 
-        // Click Event: Handle Tab Switching with Smooth Height and Swipe Animations
+        // Click Event: Handle Tab Switching with Swipe Animations
         btn.addEventListener('click', () => {
-            if (btn.classList.contains('active')) return; // Ignore if already active
+            if (btn.classList.contains('active')) return;
 
             // 1. Determine slide direction
             const activeTab = document.querySelector('.tab-btn.active');
@@ -1331,61 +1336,23 @@
             const oldIndex = tabsArray.indexOf(activeTab);
             const isMovingRight = index > oldIndex;
 
-            // 2. Record the exact current height before touching anything
-            const oldHeight = panelsEl.offsetHeight;
-
-            // 3. Temporarily disable transitions to measure the new panel invisibly
-            panelsEl.style.transition = 'none';
-            panelsEl.style.willChange = 'height';
-            
-            // 4. Swap active classes so the new panel renders
+            // 2. Swap active tab and panel
             tabsArray.forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.menu-panel').forEach(p => {
                 p.classList.remove('active', 'slide-from-right', 'slide-from-left');
             });
-            
+
             btn.classList.add('active');
             panel.classList.add('active');
 
-            // Update dot indicators
-            updateDots(index);
-            
-            // Let the container resize automatically to measure the true target height
-            panelsEl.style.height = 'auto'; 
-            const targetHeight = panelsEl.offsetHeight;
+            // 3. Reset scroll to top of panel area
+            panelsEl.scrollTop = 0;
 
-            // 5. Instantly reset back to the old height before the browser draws the frame
-            panelsEl.style.height = oldHeight + 'px';
-            panelsEl.style.overflow = 'hidden';
-
-            // 6. Apply the left/right slide animation
+            // 4. Apply slide animation
             panel.classList.add(isMovingRight ? 'slide-from-right' : 'slide-from-left');
 
-            // 7. Force the browser to register the old height (Reflow)
-            void panelsEl.offsetHeight;
-
-            // 8. Re-enable height transition with smooth ease-out curve
-            panelsEl.style.transition = 'height 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-
-            // 9. Animate or stabilize
-            if (oldHeight === targetHeight) {
-                // STABILIZE: same height, just clean up
-                panelsEl.style.height = 'auto';
-                panelsEl.style.overflow = 'visible';
-                panelsEl.style.willChange = 'auto';
-            } else {
-                // ANIMATE: smoothly transition to the new height
-                panelsEl.style.height = targetHeight + 'px';
-
-                // Cleanup after animation finishes
-                setTimeout(() => {
-                    if (panel.classList.contains('active')) {
-                        panelsEl.style.height = 'auto';
-                        panelsEl.style.overflow = 'visible';
-                        panelsEl.style.willChange = 'auto';
-                    }
-                }, 560);
-            }
+            // 5. Update dot indicators
+            updateDots(index);
         });
 
         tabsEl.appendChild(btn);
@@ -1506,43 +1473,60 @@
 
     /* ── SWIPE MENU FUNCTIONALITY ── */
     let touchStartX = 0;
-    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndX   = 0;
+    let isHorizontalSwipe = false;
 
     const menuPanelsContainer = document.getElementById('menu-panels');
 
-    // Detect where the user starts touching the screen
     menuPanelsContainer.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+        isHorizontalSwipe = false;
     }, { passive: true });
 
-    // Detect where the user stops touching the screen
+    menuPanelsContainer.addEventListener('touchmove', e => {
+        const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+
+        // Lock in swipe direction on first significant movement
+        if (dx > 8 || dy > 8) {
+            isHorizontalSwipe = dx > dy;
+        }
+
+        if (isHorizontalSwipe) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const currentIndex = Array.from(tabs).findIndex(t => t.classList.contains('active'));
+            const swipingLeft  = e.changedTouches[0].clientX < touchStartX;
+            const atLastTab    = currentIndex === tabs.length - 1;
+            const atFirstTab   = currentIndex === 0;
+
+            // Prevent native overscroll bounce at edges
+            if ((swipingLeft && atLastTab) || (!swipingLeft && atFirstTab)) {
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
+
     menuPanelsContainer.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleMenuSwipe();
+        touchEndX = e.changedTouches[0].clientX;
+        if (isHorizontalSwipe) handleMenuSwipe();
     }, { passive: true });
 
     function handleMenuSwipe() {
-        const swipeThreshold = 50; // Minimum distance (in pixels) to be considered a swipe
-        const swipeDistance = touchEndX - touchStartX;
-        
-        // Find the currently active tab
+        const swipeThreshold = 50;
+        const swipeDistance  = touchEndX - touchStartX;
         const tabs = document.querySelectorAll('.tab-btn');
-        const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
-        
-        if (swipeDistance < -swipeThreshold) {
-            // Swiped Left -> Move to the Next Category
-            if (currentIndex < tabs.length - 1) {
-                tabs[currentIndex + 1].click();
-                // Smoothly scroll the tabs bar to keep the active tab visible
-                tabs[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        } else if (swipeDistance > swipeThreshold) {
-            // Swiped Right -> Move to the Previous Category
-            if (currentIndex > 0) {
-                tabs[currentIndex - 1].click();
-                // Smoothly scroll the tabs bar to keep the active tab visible
-                tabs[currentIndex - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
+        const currentIndex = Array.from(tabs).findIndex(t => t.classList.contains('active'));
+
+        if (swipeDistance < -swipeThreshold && currentIndex < tabs.length - 1) {
+            // Swiped left → next tab
+            tabs[currentIndex + 1].click();
+            tabs[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else if (swipeDistance > swipeThreshold && currentIndex > 0) {
+            // Swiped right → previous tab
+            tabs[currentIndex - 1].click();
+            tabs[currentIndex - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
     }
 </script>
